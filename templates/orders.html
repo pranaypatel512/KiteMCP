@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders - Kite MCP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2962ff;
+            --primary-light: #768fff;
+            --primary-dark: #0039cb;
+            --success-color: #00c853;
+            --danger-color: #ff1744;
+            --warning-color: #ffd600;
+            --info-color: #00b0ff;
+            --surface-color: #ffffff;
+            --background-color: #f5f5f5;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --divider-color: rgba(0, 0, 0, 0.12);
+            --card-bg: #ffffff;
+            --hover-bg: rgba(0, 0, 0, 0.04);
+            --border-color: rgba(0, 0, 0, 0.12);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #2962ff;
+            --primary-light: #768fff;
+            --primary-dark: #0039cb;
+            --success-color: #00c853;
+            --danger-color: #ff1744;
+            --warning-color: #ffd600;
+            --info-color: #00b0ff;
+            --surface-color: #1e1e1e;
+            --background-color: #121212;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --divider-color: rgba(255, 255, 255, 0.12);
+            --card-bg: #1e1e1e;
+            --hover-bg: rgba(255, 255, 255, 0.04);
+            --border-color: rgba(255, 255, 255, 0.12);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background-color: var(--background-color);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .navbar {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--divider-color);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            color: var(--text-primary) !important;
+            font-weight: 600;
+            font-size: 1.25rem;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-link {
+            color: var(--text-primary) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .nav-link:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--hover-bg);
+            border-radius: 4px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--divider-color);
+            padding: 1rem;
+            font-weight: 600;
+        }
+
+        .table {
+            color: var(--text-primary);
+        }
+
+        .table th {
+            background-color: var(--surface-color);
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            vertical-align: middle;
+            color: var(--text-primary);
+        }
+
+        .order-status {
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .order-status.complete {
+            background-color: rgba(0, 200, 83, 0.1);
+            color: var(--success-color);
+        }
+
+        .order-status.pending {
+            background-color: rgba(255, 214, 0, 0.1);
+            color: var(--warning-color);
+        }
+
+        .order-status.cancelled {
+            background-color: rgba(255, 23, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .refresh-btn {
+            cursor: pointer;
+            color: var(--primary-color);
+            transition: color 0.2s;
+        }
+
+        .refresh-btn:hover {
+            color: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-chart-line"></i> Kite MCP
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/analytics">
+                            <i class="fas fa-chart-bar"></i> Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/orders">
+                            <i class="fas fa-list"></i> Orders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/positions">
+                            <i class="fas fa-briefcase"></i> Positions
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <button class="theme-toggle me-3" onclick="toggleTheme()">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <a href="/logout" class="btn btn-outline-danger">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Place Order Card -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Place Order</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="orderForm">
+                            <div class="mb-3">
+                                <label class="form-label">Symbol</label>
+                                <input type="text" class="form-control" id="symbol" placeholder="e.g., RELIANCE" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Quantity</label>
+                                <input type="number" class="form-control" id="quantity" placeholder="Enter quantity" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Order Type</label>
+                                <select class="form-control" id="orderType" required>
+                                    <option value="MARKET">Market</option>
+                                    <option value="LIMIT">Limit</option>
+                                </select>
+                            </div>
+                            <div class="mb-3" id="priceField" style="display: none;">
+                                <label class="form-label">Price</label>
+                                <input type="number" class="form-control" id="price" placeholder="Enter price">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Transaction Type</label>
+                                <select class="form-control" id="transactionType" required>
+                                    <option value="BUY">Buy</option>
+                                    <option value="SELL">Sell</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Place Order</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Book Card -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Order History</h5>
+                        <div>
+                            <i class="fas fa-sync-alt refresh-btn me-3" onclick="refreshOrders()"></i>
+                            <i class="fas fa-filter"></i>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Symbol</th>
+                                        <th>Type</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Status</th>
+                                        <th>Time</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTable">
+                                    <!-- Orders will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Theme switching functionality
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const themeIcon = document.querySelector('.theme-toggle i');
+            themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        // Initialize theme
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+            loadOrders();
+        });
+
+        // Handle order type change
+        document.getElementById('orderType').addEventListener('change', function() {
+            const priceField = document.getElementById('priceField');
+            priceField.style.display = this.value === 'LIMIT' ? 'block' : 'none';
+        });
+
+        // Handle order form submission
+        document.getElementById('orderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const orderData = {
+                symbol: document.getElementById('symbol').value,
+                quantity: document.getElementById('quantity').value,
+                orderType: document.getElementById('orderType').value,
+                transactionType: document.getElementById('transactionType').value
+            };
+
+            if (orderData.orderType === 'LIMIT') {
+                orderData.price = document.getElementById('price').value;
+            }
+
+            try {
+                const response = await fetch('/api/place_order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('Order placed successfully!');
+                    loadOrders();
+                    this.reset();
+                } else {
+                    alert('Error placing order: ' + result.message);
+                }
+            } catch (error) {
+                alert('Error placing order: ' + error.message);
+            }
+        });
+
+        // Load orders
+        async function loadOrders() {
+            try {
+                const response = await fetch('/api/orders');
+                const orders = await response.json();
+                const ordersTable = document.getElementById('ordersTable');
+                
+                ordersTable.innerHTML = orders.map(order => `
+                    <tr>
+                        <td>${order.order_id}</td>
+                        <td>${order.symbol}</td>
+                        <td>${order.type}</td>
+                        <td>${order.quantity}</td>
+                        <td>₹${order.price}</td>
+                        <td><span class="order-status ${order.status.toLowerCase()}">${order.status}</span></td>
+                        <td>${new Date(order.order_timestamp).toLocaleString()}</td>
+                        <td>
+                            ${order.status === 'OPEN' ? `
+                                <button class="btn btn-sm btn-danger" onclick="cancelOrder('${order.order_id}')">
+                                    Cancel
+                                </button>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading orders:', error);
+            }
+        }
+
+        // Refresh orders
+        function refreshOrders() {
+            loadOrders();
+        }
+
+        // Cancel order
+        async function cancelOrder(orderId) {
+            if (confirm('Are you sure you want to cancel this order?')) {
+                try {
+                    const response = await fetch(`/api/cancel_order/${orderId}`, {
+                        method: 'POST'
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        loadOrders();
+                    } else {
+                        alert('Error cancelling order: ' + result.message);
+                    }
+                } catch (error) {
+                    alert('Error cancelling order: ' + error.message);
+                }
+            }
+        }
+    </script>
+</body>
+</html> 

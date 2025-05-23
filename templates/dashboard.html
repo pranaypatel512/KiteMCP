@@ -5,40 +5,763 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kite MCP Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
+        :root {
+            /* Light theme (default) */
+            --primary-color: #2962ff;
+            --primary-light: #768fff;
+            --primary-dark: #0039cb;
+            --success-color: #00c853;
+            --danger-color: #ff1744;
+            --warning-color: #ffd600;
+            --info-color: #00b0ff;
+            --surface-color: #ffffff;
+            --background-color: #f5f5f5;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --divider-color: rgba(0, 0, 0, 0.12);
+            --card-bg: #ffffff;
+            --hover-bg: rgba(0, 0, 0, 0.04);
+            --border-color: rgba(0, 0, 0, 0.12);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #2962ff;
+            --primary-light: #768fff;
+            --primary-dark: #0039cb;
+            --success-color: #00c853;
+            --danger-color: #ff1744;
+            --warning-color: #ffd600;
+            --info-color: #00b0ff;
+            --surface-color: #1e1e1e;
+            --background-color: #121212;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --divider-color: rgba(255, 255, 255, 0.12);
+            --card-bg: #1e1e1e;
+            --hover-bg: rgba(255, 255, 255, 0.04);
+            --border-color: rgba(255, 255, 255, 0.12);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background-color: var(--background-color);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .navbar {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--divider-color);
+            padding: 1rem 0;
+        }
+        
+        .navbar-brand {
+            color: var(--text-primary) !important;
+            font-weight: 600;
+            font-size: 1.25rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-link {
+            color: var(--text-primary) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        
+        .nav-link:hover {
+            background-color: var(--hover-bg);
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+        
+        .theme-toggle:hover {
+            background-color: var(--hover-bg);
+            border-radius: 4px;
+        }
+        
         .card {
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background-color: var(--card-bg);
+            transition: box-shadow 0.3s ease;
         }
+        
+        .card:hover {
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+        
         .card-header {
-            background-color: #f8f9fa;
-            font-weight: bold;
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--divider-color);
+            font-weight: 600;
+            padding: 1.25rem;
+            border-radius: 12px 12px 0 0 !important;
         }
+        
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .summary-card h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .summary-card p {
+            font-size: 2rem;
+            margin-bottom: 0;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        
+        .table {
+            margin-bottom: 0;
+            color: var(--text-primary);
+        }
+        
         .table th {
-            background-color: #f8f9fa;
+            background-color: var(--surface-color);
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+            border-bottom: 1px solid var(--divider-color);
         }
+        
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--divider-color);
+        }
+        
         .positive {
-            color: #28a745;
+            color: var(--success-color);
+            font-weight: 600;
         }
+        
         .negative {
-            color: #dc3545;
+            color: var(--danger-color);
+            font-weight: 600;
+        }
+        
+        .refresh-btn {
+            cursor: pointer;
+            color: var(--primary-color);
+            transition: color 0.2s;
+        }
+        
+        .refresh-btn:hover {
+            color: var(--primary-dark);
+        }
+        
+        .loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .error-message {
+            color: var(--danger-color);
+            padding: 1rem;
+            background-color: var(--surface-color);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+            font-weight: 500;
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+        
+        .material-icon {
+            font-size: 1.25rem;
+            vertical-align: middle;
+            margin-right: 0.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: var(--hover-bg);
+        }
+        
+        .table-striped tbody tr:hover {
+            background-color: var(--hover-bg);
+        }
+        
+        @media (max-width: 768px) {
+            .summary-card {
+                margin-bottom: 1rem;
+            }
+            
+            .card-header {
+                padding: 1rem;
+            }
+            
+            .table th, .table td {
+                padding: 0.75rem;
+            }
+        }
+        
+        /* Loading animation */
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading .loading-spinner {
+            display: inline-block;
+        }
+
+        /* Trading Section Styles */
+        .trading-section {
+            margin-top: 2rem;
+        }
+
+        .trading-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .trading-input {
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem;
+            width: 100%;
+            margin-bottom: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .trading-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .trading-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .trading-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .trading-btn.secondary {
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .trading-btn.secondary:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .order-book {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .order-status {
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background-color: var(--surface-color);
+        }
+
+        .order-status.success {
+            background-color: rgba(0, 200, 83, 0.1);
+            color: var(--success-color);
+        }
+
+        .order-status.pending {
+            background-color: rgba(255, 214, 0, 0.1);
+            color: var(--warning-color);
+        }
+
+        .order-status.failed {
+            background-color: rgba(255, 23, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        /* AI Chat Interface Styles */
+        .chat-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .chat-container.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+            z-index: 2000;
+        }
+
+        .chat-container.fullscreen .chat-body {
+            height: calc(100vh - 130px);
+        }
+
+        .chat-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .chat-controls i {
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .chat-controls i:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .chat-container.fullscreen .chat-controls i.fa-expand {
+            transform: rotate(180deg);
+        }
+
+        .chat-header {
+            padding: 1rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 12px 12px 0 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .chat-body {
+            height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
+            display: block;
+            background-color: var(--surface-color);
+        }
+
+        .chat-message {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message-content {
+            padding: 0.75rem;
+            border-radius: 8px;
+            max-width: 80%;
+            word-wrap: break-word;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+        }
+
+        .message-content h1,
+        .message-content h2,
+        .message-content h3,
+        .message-content h4 {
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+            color: inherit;
+        }
+
+        .message-content ul,
+        .message-content ol {
+            margin: 0.5em 0;
+            padding-left: 1.5em;
+        }
+
+        .message-content li {
+            margin: 0.25em 0;
+        }
+
+        .message-content code {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        .message-content pre {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 1em;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 0.5em 0;
+        }
+
+        .message-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .message-content table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 0.5em 0;
+        }
+
+        .message-content th,
+        .message-content td {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 0.5em;
+            text-align: left;
+        }
+
+        .message-content th {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .user-message .message-content {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .user-message .message-content code {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-message .message-content pre {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .ai-message .message-content {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        .ai-message .message-content code {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .ai-message .message-content pre {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-input {
+            padding: 1rem;
+            border-top: 1px solid var(--divider-color);
+            display: block;
+        }
+
+        .chat-input form {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+        }
+
+        .chat-input button {
+            padding: 0.75rem 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .chat-input button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .chat-minimized {
+            height: auto;
+        }
+
+        .chat-minimized .chat-body,
+        .chat-minimized .chat-input {
+            display: none;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 0.5rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Adjust message width in fullscreen */
+        .chat-container.fullscreen .message-content {
+            max-width: 60%;
+        }
+
+        /* Autocomplete styles */
+        .autocomplete-suggestions {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px 8px 0 0;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1001;
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .suggestion-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .suggestion-item:hover,
+        .suggestion-item.selected {
+            background-color: var(--hover-bg);
+        }
+
+        .suggestion-item .command {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .suggestion-item .description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .suggestion-item .shortcut {
+            margin-left: auto;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            background-color: var(--surface-color);
+            border-radius: 4px;
+        }
+
+        /* Adjust chat input container for autocomplete */
+        .chat-input {
+            position: relative;
+        }
+
+        /* Update input group styles */
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .input-group .form-control {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            font-size: 1rem;
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+        }
+
+        .input-group .btn {
+            padding: 0.75rem 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .input-group .btn:hover {
+            background-color: var(--primary-dark);
         }
     </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <h1 class="mb-4">Kite MCP Dashboard</h1>
-        
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-chart-line"></i> Kite MCP
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/dashboard">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/analytics">
+                            <i class="fas fa-chart-bar"></i> Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/orders">
+                            <i class="fas fa-list"></i> Orders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/positions">
+                            <i class="fas fa-briefcase"></i> Positions
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <button class="theme-toggle me-3" onclick="toggleTheme()">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <a href="/logout" class="btn btn-outline-danger">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage"></div>
+
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="summary-card">
+                    <h3><i class="fas fa-wallet me-2"></i>Net Balance</h3>
+                    <p>₹{{ "%.2f"|format(margins.equity.net|float) if margins else 0 }}</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="summary-card">
+                    <h3><i class="fas fa-money-bill-wave me-2"></i>Available Cash</h3>
+                    <p>₹{{ "%.2f"|format(margins.equity.available.cash|float) if margins else 0 }}</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="summary-card">
+                    <h3><i class="fas fa-chart-line me-2"></i>Total P&L</h3>
+                    <p class="{{ 'positive' if portfolio and portfolio|sum(attribute='pnl') > 0 else 'negative' }}">
+                        ₹{{ "%.2f"|format(portfolio|sum(attribute='pnl')|float) if portfolio else 0 }}
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="summary-card">
+                    <h3><i class="fas fa-exchange-alt me-2"></i>Open Positions</h3>
+                    <p>{{ positions|length if positions else 0 }}</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Margins Section -->
         <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Margin Information</h5>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 section-title">
+                    <i class="fas fa-landmark"></i>Margin Information
+                </h5>
+                <i class="fas fa-info-circle" data-bs-toggle="tooltip" title="Your current margin details"></i>
             </div>
             <div class="card-body">
                 {% if margins %}
                     <div class="row">
                         <div class="col-md-6">
-                            <h6>Equity</h6>
+                            <h6 class="mb-3 section-title">
+                                <i class="fas fa-landmark"></i>Equity
+                            </h6>
                             <table class="table table-sm">
                                 <tr>
                                     <td>Available Cash</td>
@@ -59,7 +782,9 @@
                             </table>
                         </div>
                         <div class="col-md-6">
-                            <h6>Commodity</h6>
+                            <h6 class="mb-3 section-title">
+                                <i class="fas fa-coins"></i>Commodity
+                            </h6>
                             <table class="table table-sm">
                                 <tr>
                                     <td>Available Cash</td>
@@ -85,84 +810,748 @@
                 {% endif %}
             </div>
         </div>
+    </div>
 
-        <!-- Portfolio Section -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Portfolio Holdings</h5>
-            </div>
-            <div class="card-body">
-                {% if portfolio %}
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Symbol</th>
-                                    <th>Quantity</th>
-                                    <th>Avg Price</th>
-                                    <th>Last Price</th>
-                                    <th>P&L</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in portfolio %}
-                                <tr>
-                                    <td>{{ item.tradingsymbol }}</td>
-                                    <td>{{ item.quantity }}</td>
-                                    <td>₹{{ "%.2f"|format(item.average_price|float) }}</td>
-                                    <td>₹{{ "%.2f"|format(item.last_price|float) }}</td>
-                                    <td class="{{ 'positive' if item.pnl > 0 else 'negative' }}">
-                                        ₹{{ "%.2f"|format(item.pnl|float) }}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <p class="text-muted">No holdings found</p>
-                {% endif %}
+    <!-- AI Chat Interface -->
+    <div class="chat-container" id="chatContainer">
+        <div class="chat-header" id="chatHeader">
+            <h3><i class="fas fa-robot me-2"></i>Trading Assistant</h3>
+            <div class="chat-controls">
+                <i class="fas fa-expand" id="toggleFullscreen"></i>
+                <i class="fas fa-chevron-down" id="toggleChat"></i>
             </div>
         </div>
-
-        <!-- Current Positions Section -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Current Positions</h5>
+        <div class="chat-body" id="chatBody">
+            <div class="chat-message ai-message">
+                <div class="message-content">
+                    Hello! I'm your trading assistant. You can ask me to:
+                    <ul>
+                        <li>Check your portfolio</li>
+                        <li>Place orders</li>
+                        <li>View order book</li>
+                        <li>Check margins</li>
+                        <li>And more!</li>
+                    </ul>
+                    How can I help you today?
+                </div>
             </div>
-            <div class="card-body">
-                {% if positions %}
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Symbol</th>
-                                    <th>Net Quantity</th>
-                                    <th>Avg Price</th>
-                                    <th>P&L</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for position in positions %}
-                                <tr>
-                                    <td>{{ position.tradingsymbol }}</td>
-                                    <td>{{ position.net_quantity }}</td>
-                                    <td>₹{{ "%.2f"|format(position.average_price|float) }}</td>
-                                    <td class="{{ 'positive' if position.pnl > 0 else 'negative' }}">
-                                        ₹{{ "%.2f"|format(position.pnl|float) }}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <p class="text-muted">No open positions</p>
-                {% endif %}
-            </div>
+        </div>
+        <div class="typing-indicator" id="typingIndicator">
+            Assistant is typing...
+        </div>
+        <div class="chat-input" id="chatInput">
+            <form id="chatForm" onsubmit="return false;">
+                <div class="input-group">
+                    <input type="text" id="userInput" class="form-control" placeholder="Type your command..." autocomplete="off">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+            <div class="autocomplete-suggestions" id="autocompleteSuggestions"></div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Predefined commands for autocomplete
+        const predefinedCommands = [
+            {
+                command: 'help',
+                description: 'Show all available commands',
+                shortcut: '?'
+            },
+            {
+                command: 'show portfolio',
+                description: 'Display your current holdings',
+                shortcut: 'p'
+            },
+            {
+                command: 'show orders',
+                description: 'View your order book',
+                shortcut: 'o'
+            },
+            {
+                command: 'check margins',
+                description: 'View your margin details',
+                shortcut: 'm'
+            },
+            {
+                command: 'show positions',
+                description: 'View your current positions',
+                shortcut: 'pos'
+            },
+            {
+                command: 'buy',
+                description: 'Place a buy order (e.g., buy 10 RELIANCE at 2500)',
+                shortcut: 'b'
+            },
+            {
+                command: 'sell',
+                description: 'Place a sell order (e.g., sell 5 TCS)',
+                shortcut: 's'
+            },
+            {
+                command: 'price of',
+                description: 'Get current price of a symbol',
+                shortcut: 'q'
+            }
+        ];
+
+        // Add message function
+        function addMessage(content, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${type}-message`;
+            
+            // Parse markdown content
+            const parsedContent = marked.parse(content);
+            
+            messageDiv.innerHTML = `<div class="message-content">${parsedContent}</div>`;
+            document.getElementById('chatBody').appendChild(messageDiv);
+            document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
+        }
+
+        // Initialize autocomplete
+        function initializeAutocomplete() {
+            const userInput = document.getElementById('userInput');
+            const suggestionsContainer = document.getElementById('autocompleteSuggestions');
+            let selectedIndex = -1;
+
+            function showSuggestions(input) {
+                const value = input.toLowerCase();
+                if (!value) {
+                    suggestionsContainer.style.display = 'none';
+                    return;
+                }
+
+                const matches = predefinedCommands.filter(cmd => 
+                    cmd.command.toLowerCase().includes(value) ||
+                    cmd.description.toLowerCase().includes(value)
+                );
+
+                if (matches.length > 0) {
+                    suggestionsContainer.innerHTML = matches.map((cmd, index) => `
+                        <div class="suggestion-item ${index === selectedIndex ? 'selected' : ''}" data-index="${index}">
+                            <span class="command">${cmd.command}</span>
+                            <span class="description">${cmd.description}</span>
+                            <span class="shortcut">${cmd.shortcut}</span>
+                        </div>
+                    `).join('');
+                    suggestionsContainer.style.display = 'block';
+                } else {
+                    suggestionsContainer.style.display = 'none';
+                }
+            }
+
+            function selectSuggestion(index) {
+                const items = suggestionsContainer.getElementsByClassName('suggestion-item');
+                if (items[index]) {
+                    selectedIndex = index;
+                    Array.from(items).forEach((item, i) => {
+                        item.classList.toggle('selected', i === index);
+                    });
+                }
+            }
+
+            function applySuggestion() {
+                const items = suggestionsContainer.getElementsByClassName('suggestion-item');
+                if (items[selectedIndex]) {
+                    const command = items[selectedIndex].querySelector('.command').textContent;
+                    userInput.value = command;
+                    suggestionsContainer.style.display = 'none';
+                    selectedIndex = -1;
+                }
+            }
+
+            // Input event listener
+            userInput.addEventListener('input', function(e) {
+                showSuggestions(e.target.value);
+                selectedIndex = -1;
+            });
+
+            // Focus event listener
+            userInput.addEventListener('focus', function(e) {
+                if (e.target.value) {
+                    showSuggestions(e.target.value);
+                }
+            });
+
+            // Keyboard navigation
+            userInput.addEventListener('keydown', function(e) {
+                const items = suggestionsContainer.getElementsByClassName('suggestion-item');
+                
+                switch(e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+                        selectSuggestion(selectedIndex);
+                        break;
+                        
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        selectedIndex = Math.max(selectedIndex - 1, 0);
+                        selectSuggestion(selectedIndex);
+                        break;
+                        
+                    case 'Tab':
+                        if (suggestionsContainer.style.display === 'block') {
+                            e.preventDefault();
+                            applySuggestion();
+                        }
+                        break;
+                        
+                    case 'Enter':
+                        if (suggestionsContainer.style.display === 'block' && selectedIndex >= 0) {
+                            e.preventDefault();
+                            applySuggestion();
+                        }
+                        break;
+                        
+                    case 'Escape':
+                        suggestionsContainer.style.display = 'none';
+                        selectedIndex = -1;
+                        break;
+                }
+            });
+
+            // Click handling
+            suggestionsContainer.addEventListener('click', function(e) {
+                const item = e.target.closest('.suggestion-item');
+                if (item) {
+                    selectedIndex = parseInt(item.dataset.index);
+                    applySuggestion();
+                }
+            });
+
+            // Close suggestions when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.chat-input')) {
+                    suggestionsContainer.style.display = 'none';
+                    selectedIndex = -1;
+                }
+            });
+        }
+
+        // Initialize chat
+        function initializeChat() {
+            const userInput = document.getElementById('userInput');
+            const chatForm = document.getElementById('chatForm');
+            const chatBody = document.getElementById('chatBody');
+            const chatInput = document.getElementById('chatInput');
+            const chatHeader = document.getElementById('chatHeader');
+            const toggleFullscreenBtn = document.getElementById('toggleFullscreen');
+            const chatContainer = document.getElementById('chatContainer');
+            
+            // Show chat interface by default
+            chatBody.style.display = 'block';
+            chatInput.style.display = 'block';
+            
+            // Initialize autocomplete
+            initializeAutocomplete();
+            
+            // Handle form submission
+            chatForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const command = userInput.value.trim();
+                if (!command) return;
+                
+                addMessage(command, 'user');
+                userInput.value = '';
+                
+                try {
+                    await processCommand(command);
+                } catch (error) {
+                    console.error('Error processing command:', error);
+                    addMessage('Sorry, there was an error processing your command.', 'ai');
+                }
+            });
+
+            // Toggle chat window
+            chatHeader.addEventListener('click', (e) => {
+                if (e.target.closest('#toggleFullscreen')) return;
+                
+                chatBody.style.display = chatBody.style.display === 'none' ? 'block' : 'none';
+                chatInput.style.display = chatInput.style.display === 'none' ? 'block' : 'none';
+                const icon = chatHeader.querySelector('i.fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            });
+
+            // Toggle fullscreen
+            toggleFullscreenBtn.addEventListener('click', () => {
+                chatContainer.classList.toggle('fullscreen');
+                const icon = toggleFullscreenBtn;
+                icon.classList.toggle('fa-expand');
+                icon.classList.toggle('fa-compress');
+                
+                if (chatContainer.classList.contains('fullscreen')) {
+                    chatBody.style.height = 'calc(100vh - 130px)';
+                } else {
+                    chatBody.style.height = '400px';
+                }
+                
+                setTimeout(() => {
+                    chatBody.scrollTop = chatBody.scrollHeight;
+                }, 300);
+            });
+
+            // Focus on chat input
+            userInput.focus();
+        }
+
+        // Initialize theme when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTheme();
+            initializeChat();
+        });
+
+        // Theme switching functionality
+        function initializeTheme() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = themeToggle.querySelector('i');
+            
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+            
+            // Toggle theme
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon(newTheme);
+            });
+        }
+
+        function updateThemeIcon(theme) {
+            const themeIcon = document.querySelector('#themeToggle i');
+            themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+
+        // Refresh functionality
+        document.getElementById('refreshData').addEventListener('click', function(e) {
+            e.preventDefault();
+            const container = document.querySelector('.container');
+            const refreshBtn = document.getElementById('refreshData');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            container.classList.add('loading');
+            refreshBtn.classList.add('loading');
+            errorMessage.style.display = 'none';
+            
+            fetch('/refresh')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        errorMessage.style.display = 'block';
+                        errorMessage.textContent = data.error;
+                        console.error('Refresh error:', data.error);
+                    } else {
+                        window.location.reload();
+                    }
+                })
+                .catch(error => {
+                    errorMessage.style.display = 'block';
+                    errorMessage.textContent = 'Error refreshing data. Please try again.';
+                    console.error('Refresh error:', error);
+                })
+                .finally(() => {
+                    container.classList.remove('loading');
+                    refreshBtn.classList.remove('loading');
+                });
+        });
+
+        // Show/hide price field based on order type
+        document.getElementById('orderType').addEventListener('change', function() {
+            const priceField = document.getElementById('priceField');
+            priceField.style.display = this.value === 'LIMIT' ? 'block' : 'none';
+        });
+
+        // Handle order form submission
+        document.getElementById('orderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const orderData = {
+                symbol: document.getElementById('symbol').value,
+                quantity: document.getElementById('quantity').value,
+                orderType: document.getElementById('orderType').value,
+                price: document.getElementById('price').value,
+                transactionType: document.getElementById('transactionType').value
+            };
+
+            try {
+                const response = await fetch('/api/place_order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('Order placed successfully!');
+                    updateOrderBook();
+                } else {
+                    alert('Error placing order: ' + result.message);
+                }
+            } catch (error) {
+                alert('Error placing order: ' + error.message);
+            }
+        });
+
+        // Update order book
+        async function updateOrderBook() {
+            try {
+                const response = await fetch('/api/orders');
+                const orders = await response.json();
+                
+                const orderBook = document.getElementById('orderBook');
+                orderBook.innerHTML = orders.map(order => `
+                    <tr>
+                        <td>${order.order_id}</td>
+                        <td>${order.symbol}</td>
+                        <td>${order.type}</td>
+                        <td><span class="order-status ${order.status.toLowerCase()}">${order.status}</span></td>
+                        <td>
+                            <button class="trading-btn secondary" onclick="cancelOrder('${order.order_id}')">
+                                Cancel
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+            }
+        }
+
+        // Update portfolio
+        async function updatePortfolio() {
+            try {
+                const response = await fetch('/api/portfolio');
+                const portfolio = await response.json();
+                
+                const portfolioTable = document.getElementById('portfolioTable');
+                portfolioTable.innerHTML = portfolio.map(position => `
+                    <tr>
+                        <td>${position.symbol}</td>
+                        <td>${position.quantity}</td>
+                        <td>${position.average_price}</td>
+                        <td>${position.last_price}</td>
+                        <td class="${position.pnl >= 0 ? 'positive' : 'negative'}">
+                            ${position.pnl}
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching portfolio:', error);
+            }
+        }
+
+        // Cancel order
+        async function cancelOrder(orderId) {
+            try {
+                const response = await fetch(`/api/cancel_order/${orderId}`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Order cancelled successfully!');
+                    updateOrderBook();
+                } else {
+                    alert('Error cancelling order: ' + result.message);
+                }
+            } catch (error) {
+                alert('Error cancelling order: ' + error.message);
+            }
+        }
+
+        // Initial load
+        updateOrderBook();
+        updatePortfolio();
+
+        // Refresh data periodically
+        setInterval(() => {
+            updateOrderBook();
+            updatePortfolio();
+        }, 30000); // Update every 30 seconds
+
+        // Process user commands
+        async function processCommand(command) {
+            const lowerCommand = command.toLowerCase();
+            
+            // Show typing indicator
+            typingIndicator.style.display = 'block';
+            
+            try {
+                let response;
+                
+                // Authentication commands
+                if (lowerCommand.includes('check if i\'m logged') || lowerCommand.includes('authenticate')) {
+                    const isLoggedIn = await checkAuthentication();
+                    response = isLoggedIn 
+                        ? "You are currently logged in to your Zerodha account."
+                        : "You need to log in. Please click the login button in the navigation bar.";
+                }
+                // Portfolio related commands
+                else if (lowerCommand.includes('portfolio') || lowerCommand.includes('holdings')) {
+                    try {
+                        const portfolio = await fetch('/api/portfolio').then(r => r.json());
+                        response = formatPortfolioResponse(portfolio);
+                    } catch (error) {
+                        console.error('Portfolio error:', error);
+                        response = "Error fetching portfolio. Please make sure you're logged in and try again.";
+                    }
+                }
+                // Order book commands
+                else if (lowerCommand.includes('order book') || lowerCommand.includes('orders')) {
+                    try {
+                        const orders = await fetch('/api/orders').then(r => r.json());
+                        response = formatOrdersResponse(orders);
+                    } catch (error) {
+                        console.error('Orders error:', error);
+                        response = "Error fetching orders. Please make sure you're logged in and try again.";
+                    }
+                }
+                // Place order commands
+                else if (lowerCommand.includes('buy') || lowerCommand.includes('sell')) {
+                    try {
+                        const orderParams = parseOrderCommand(command);
+                        if (orderParams) {
+                            const result = await fetch('/api/place_order', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(orderParams)
+                            }).then(r => r.json());
+                            
+                            response = result.success 
+                                ? `Order placed successfully! Order ID: ${result.order_id}`
+                                : `Error placing order: ${result.message}`;
+                        } else {
+                            response = "I couldn't understand the order details. Please use format: 'Buy/Sell [quantity] [symbol] at [price]'";
+                        }
+                    } catch (error) {
+                        console.error('Place order error:', error);
+                        response = "Error placing order. Please make sure you're logged in and try again.";
+                    }
+                }
+                // Margins commands
+                else if (lowerCommand.includes('margin') || lowerCommand.includes('balance')) {
+                    try {
+                        const margins = await fetch('/refresh').then(r => r.json()).then(data => data.margins);
+                        response = formatMarginsResponse(margins);
+                    } catch (error) {
+                        console.error('Margins error:', error);
+                        response = "Error fetching margins. Please make sure you're logged in and try again.";
+                    }
+                }
+                // Current positions
+                else if (lowerCommand.includes('current positions') || lowerCommand.includes('open positions')) {
+                    try {
+                        const positions = await fetch('/api/positions').then(r => r.json());
+                        response = formatPositionsResponse(positions);
+                    } catch (error) {
+                        console.error('Positions error:', error);
+                        response = "Error fetching positions. Please make sure you're logged in and try again.";
+                    }
+                }
+                // Quote commands
+                else if (lowerCommand.includes('price of') || lowerCommand.includes('quote')) {
+                    try {
+                        const symbols = extractSymbols(command);
+                        if (symbols.length > 0) {
+                            const quotes = await fetchQuotes(symbols);
+                            response = formatQuotesResponse(quotes);
+                        } else {
+                            response = "Please specify which symbols you'd like to check.";
+                        }
+                    } catch (error) {
+                        console.error('Quotes error:', error);
+                        response = "Error fetching quotes. Please make sure you're logged in and try again.";
+                    }
+                }
+                // Help command
+                else if (lowerCommand.includes('help')) {
+                    response = `# Trading Assistant Help
+
+## Available Commands
+
+### Account & Portfolio
+- \`check if I'm logged in\` - Verify authentication status
+- \`show portfolio\` - View your holdings
+- \`check margins\` - View margin details
+
+### Trading
+- \`show orders\` - View order book
+- \`buy [quantity] [symbol] at [price]\` - Place buy order
+- \`sell [quantity] [symbol] at [price]\` - Place sell order
+- \`show positions\` - View current positions
+
+### Market Data
+- \`price of [symbol]\` - Get current price
+- \`quote [symbol]\` - Get detailed quote
+
+### Examples
+\`\`\`
+buy 10 RELIANCE at 2500
+sell 5 TCS
+price of INFY
+show portfolio
+\`\`\`
+
+Need more help? Just ask!`;
+                }
+                else {
+                    response = "I'm not sure I understand. Try asking for 'help' to see what I can do!";
+                }
+                
+                addMessage(response, 'ai');
+            } catch (error) {
+                console.error('Command processing error:', error);
+                addMessage("Sorry, I encountered an error. Please make sure you're logged in and try again.", 'ai');
+            } finally {
+                typingIndicator.style.display = 'none';
+            }
+        }
+
+        // Helper functions for command parsing
+        function extractSymbols(command) {
+            const symbolMatch = command.match(/\b[A-Z]{2,}\b/g);
+            return symbolMatch || [];
+        }
+
+        function parseOrderCommand(command) {
+            const buyMatch = command.match(/buy\s+(\d+)\s+([A-Z]+)(?:\s+at\s+(\d+))?/i);
+            const sellMatch = command.match(/sell\s+(\d+)\s+([A-Z]+)(?:\s+at\s+(\d+))?/i);
+            
+            if (buyMatch) {
+                return {
+                    symbol: buyMatch[2],
+                    quantity: parseInt(buyMatch[1]),
+                    transactionType: "BUY",
+                    orderType: buyMatch[3] ? "LIMIT" : "MARKET",
+                    price: buyMatch[3] ? parseFloat(buyMatch[3]) : null
+                };
+            } else if (sellMatch) {
+                return {
+                    symbol: sellMatch[2],
+                    quantity: parseInt(sellMatch[1]),
+                    transactionType: "SELL",
+                    orderType: sellMatch[3] ? "LIMIT" : "MARKET",
+                    price: sellMatch[3] ? parseFloat(sellMatch[3]) : null
+                };
+            }
+            return null;
+        }
+
+        // Response formatting functions
+        function formatPortfolioResponse(portfolio) {
+            if (!portfolio.length) return "Your portfolio is empty.";
+            
+            let response = "### Your Portfolio Holdings\n\n";
+            response += "| Symbol | Quantity | Avg Price | P&L |\n";
+            response += "|--------|----------|-----------|-----|\n";
+            
+            portfolio.forEach(holding => {
+                response += `| ${holding.symbol} | ${holding.quantity} | ₹${holding.average_price} | ₹${holding.pnl} |\n`;
+            });
+            
+            return response;
+        }
+
+        function formatOrdersResponse(orders) {
+            if (!orders.length) return "No orders found.";
+            
+            let response = "### Your Orders\n\n";
+            response += "| Order ID | Symbol | Type | Status |\n";
+            response += "|----------|--------|------|--------|\n";
+            
+            orders.forEach(order => {
+                response += `| ${order.order_id} | ${order.symbol} | ${order.type} | ${order.status} |\n`;
+            });
+            
+            return response;
+        }
+
+        function formatPositionsResponse(positions) {
+            if (!positions.length) return "You have no open positions.";
+            
+            let response = "### Current Positions\n\n";
+            response += "| Symbol | Quantity | Avg Price | P&L |\n";
+            response += "|--------|----------|-----------|-----|\n";
+            
+            positions.forEach(position => {
+                response += `| ${position.tradingsymbol} | ${position.net_quantity} | ₹${position.average_price} | ₹${position.pnl} |\n`;
+            });
+            
+            return response;
+        }
+
+        function formatQuotesResponse(quotes) {
+            if (!quotes.length) return "No quotes available.";
+            
+            let response = "### Current Quotes\n\n";
+            response += "| Symbol | Last Price | Change |\n";
+            response += "|--------|------------|--------|\n";
+            
+            quotes.forEach(quote => {
+                const changeColor = quote.change_percent >= 0 ? "🟢" : "🔴";
+                response += `| ${quote.symbol} | ₹${quote.last_price} | ${changeColor} ${quote.change_percent}% |\n`;
+            });
+            
+            return response;
+        }
+
+        function formatMarginsResponse(margins) {
+            if (!margins) return "No margin information available.";
+            
+            return `### Margin Details
+
+**Net Balance:** ₹${margins.equity.net}
+**Available Cash:** ₹${margins.equity.available.cash}
+**Opening Balance:** ₹${margins.equity.available.opening_balance}
+**Utilized Margin:** ₹${margins.equity.utilised.span}`;
+        }
+
+        // API functions with error handling
+        async function fetchQuotes(symbols) {
+            try {
+                const response = await fetch('/api/quotes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ symbols })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            } catch (error) {
+                console.error('Error fetching quotes:', error);
+                throw error;
+            }
+        }
+
+        async function checkAuthentication() {
+            try {
+                const response = await fetch('/api/auth_status');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                return data.authenticated;
+            } catch (error) {
+                console.error('Error checking authentication:', error);
+                return false;
+            }
+        }
+    </script>
 </body>
 </html>
